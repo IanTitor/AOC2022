@@ -1,5 +1,5 @@
 f = open('input.txt', 'r')
-cals = f.read()
+cals = f.read()[:-1]
 f.close()
 cals = cals.replace('\n\n', '], [').replace('\n', ', ')
 cals = eval('[[' + cals + ']]')
