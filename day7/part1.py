@@ -31,6 +31,14 @@ class directory:
     def addFile(self, name, size):
         self.content[name] = file(name, size)
         self.updateSize(size)
+    def getSizes(self):
+        sizes = [self.size]
+        for name in self.content:
+            content = self.content[name]
+            if type(content) == directory:
+                sizes += content.getSizes()
+        return sorted(sizes)
+
 class file:
     def __init__(self, name, size):
         self.name = name
@@ -39,14 +47,11 @@ class file:
 fileSystem = directory('computer', None, -1)
 fileSystem.addDir('/')
 currentDir = fileSystem
-sizeSum = 0
 for line in output:
     line = line.split(' ')
     if line[0] == '$':
         if line[1] == 'cd':
             if line[2] == '..':
-                if currentDir.size <= 100000:
-                    sizeSum += currentDir.size
                 currentDir = currentDir[-1]
             else:
                 currentDir = currentDir[line[2]]
@@ -54,4 +59,12 @@ for line in output:
         currentDir.addDir(line[1])
     else:
         currentDir.addFile(line[1], int(line[0]))
+
+sizeSum = 0
+sizes = fileSystem.getSizes()
+for size in sizes:
+    if size > 100000:
+        break
+    else:
+        sizeSum += size
 print('total sum of the total sizes of directories with sizes of at most 100000:', sizeSum)
